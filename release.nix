@@ -1,7 +1,12 @@
 { nixpkgs ? (import ./nixpkgs.nix), ... }:
 let
-  pkgs = import nixpkgs { config = {}; };
-  add-missing = pkgs.callPackage ./derivation.nix {};
+  pkgs = import nixpkgs {
+    config = {};
+    overlays = [
+      (import ./overlay.nix)
+    ];
+  };
+  add-missing = pkgs.add-missing;
   git = pkgs.git;
 
 in rec {

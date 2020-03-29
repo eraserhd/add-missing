@@ -62,12 +62,17 @@ stdenv.mkDerivation rec {
 }' ]]
     [[ $(cat release.nix) = '{ nixpkgs ? (import ./nixpkgs.nix), ... }:
 let
-  pkgs = import nixpkgs { config = {}; };
+  pkgs = import nixpkgs {
+    config = {};
+    overlays = [
+      (import ./overlay.nix)
+    ];
+  };
   empty-dir = pkgs.callPackage ./derivation.nix {};
 in {
   test = pkgs.runCommandNoCC "empty-dir-test" {} '"${"''"}"'
     mkdir -p $out
-    : ''${empty-dir}
+    : ''${pkgs.empty-dir}
   '"${"''"}"';
 }' ]]
     [[ -z $(git status --porcelain) ]]

@@ -56,12 +56,17 @@ if [[ ! -f release.nix ]]; then
   (
     printf '{ nixpkgs ? (import ./nixpkgs.nix), ... }:\n'
     printf 'let\n'
-    printf '  pkgs = import nixpkgs { config = {}; };\n'
+    printf '  pkgs = import nixpkgs {\n'
+    printf '    config = {};\n'
+    printf '    overlays = [\n'
+    printf '      (import ./overlay.nix)\n'
+    printf '    ];\n'
+    printf '  };\n'
     printf '  %s = pkgs.callPackage ./derivation.nix {};\n' "$packageName"
     printf 'in {\n'
     printf '  test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
     printf '    mkdir -p $out\n'
-    printf '    : ${%s}\n' "$packageName"
+    printf '    : ${pkgs.%s}\n' "$packageName"
     printf '  %s;\n' "''"
     printf '}'
   ) >release.nix

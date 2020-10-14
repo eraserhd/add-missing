@@ -30,7 +30,7 @@ if [[ ! -f derivation.nix ]]; then
     printf '\n'
     printf '  meta = with stdenv.lib; {\n'
     printf '    description = "TODO: fill me in";\n'
-    printf '    homepage = https://github.com/eraserhd/%s;\n' "$packageName"
+    printf '    homepage = "https://github.com/eraserhd/%s";\n' "$packageName"
     printf '    license = licenses.publicDomain;\n'
     printf '    platforms = platforms.all;\n'
     printf '    maintainers = [ maintainers.eraserhd ];\n'

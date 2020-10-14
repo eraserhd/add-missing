@@ -13,7 +13,9 @@ fi
 if [[ ! -f overlay.nix ]]; then
   (
     printf 'self: super: {\n'
-    printf '  %s = super.callPackage ./derivation.nix {};\n' "$packageName"
+    printf '  %s = super.callPackage ./derivation.nix {\n' "$packageName"
+    printf '    fetchFromGitHub = _: ./.;\n'
+    printf '  };\n'
     printf '}\n'
   ) >overlay.nix
 fi
@@ -26,7 +28,12 @@ if [[ ! -f derivation.nix ]]; then
     printf '  pname = "%s";\n' "$packageName"
     printf '  version = "0.1.0";\n'
     printf '\n'
-    printf '  src = ./.;\n'
+    printf '  src = fetchFromGitHub {\n'
+    printf '    owner = "eraserhd";\n'
+    printf '    repo = pname;\n'
+    printf '    rev = "v${version}";\n'
+    printf '    sha256 = "";\n'
+    printf '  };\n'
     printf '\n'
     printf '  meta = with stdenv.lib; {\n'
     printf '    description = "TODO: fill me in";\n'
@@ -62,7 +69,6 @@ if [[ ! -f release.nix ]]; then
     printf '      (import ./overlay.nix)\n'
     printf '    ];\n'
     printf '  };\n'
-    printf '  %s = pkgs.callPackage ./derivation.nix {};\n' "$packageName"
     printf 'in {\n'
     printf '  test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
     printf '    mkdir -p $out\n'

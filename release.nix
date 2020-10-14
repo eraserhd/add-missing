@@ -30,7 +30,9 @@ in rec {
     grep -q '^= empty-dir$' README.adoc
     grep -q '^use nix$' .envrc
     [[ $(cat overlay.nix) = 'self: super: {
-  empty-dir = super.callPackage ./derivation.nix {};
+  empty-dir = super.callPackage ./derivation.nix {
+    fetchFromGitHub = _: ./.;
+  };
 }' ]]
     [[ $(cat default.nix) = 'let
   nixpkgs = import ./nixpkgs.nix;
@@ -50,7 +52,12 @@ stdenv.mkDerivation rec {
   pname = "empty-dir";
   version = "0.1.0";
 
-  src = ./.;
+  src = fetchFromGitHub {
+    owner = "eraserhd";
+    repo = pname;
+    rev = "v''${version}";
+    sha256 = "";
+  };
 
   meta = with stdenv.lib; {
     description = "TODO: fill me in";
@@ -68,7 +75,6 @@ let
       (import ./overlay.nix)
     ];
   };
-  empty-dir = pkgs.callPackage ./derivation.nix {};
 in {
   test = pkgs.runCommandNoCC "empty-dir-test" {} '"${"''"}"'
     mkdir -p $out

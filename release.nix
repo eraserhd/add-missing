@@ -46,7 +46,7 @@ in pkgs.empty-dir' ]]
     grep -q '^= Changes$' CHANGELOG.adoc
     [[ -n $(git rev-parse --git-dir) ]]
     git remote -v |grep -q '^origin	git@github.com:eraserhd/empty-dir.git (fetch)$'
-    [[ $(cat derivation.nix) = '{ stdenv, fetchFromGitHub, ... }:
+    [[ $(cat derivation.nix) = '{ stdenv, lib, fetchFromGitHub, ... }:
 
 stdenv.mkDerivation rec {
   pname = "empty-dir";
@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
     sha256 = "";
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "TODO: fill me in";
     homepage = "https://github.com/eraserhd/empty-dir";
     license = licenses.publicDomain;

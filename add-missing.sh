@@ -22,7 +22,7 @@ fi
 
 if [[ ! -f derivation.nix ]]; then
   (
-    printf '{ stdenv, fetchFromGitHub, ... }:\n'
+    printf '{ stdenv, lib, fetchFromGitHub, ... }:\n'
     printf '\n'
     printf 'stdenv.mkDerivation rec {\n'
     printf '  pname = "%s";\n' "$packageName"
@@ -35,7 +35,7 @@ if [[ ! -f derivation.nix ]]; then
     printf '    sha256 = "";\n'
     printf '  };\n'
     printf '\n'
-    printf '  meta = with stdenv.lib; {\n'
+    printf '  meta = with lib; {\n'
     printf '    description = "TODO: fill me in";\n'
     printf '    homepage = "https://github.com/eraserhd/%s";\n' "$packageName"
     printf '    license = licenses.publicDomain;\n'

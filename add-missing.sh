@@ -4,90 +4,91 @@ set -e
 
 export PATH="@git@/bin:$PATH"
 
-packageName=$(basename "$(pwd)")
+main() {
+    packageName=$(basename "$(pwd)")
 
-if [[ ! -f nixpkgs.nix ]]; then
-    printf '<nixpkgs>\n' >nixpkgs.nix
-fi
+    if [[ ! -f nixpkgs.nix ]]; then
+        printf '<nixpkgs>\n' >nixpkgs.nix
+    fi
 
-if [[ ! -f overlay.nix ]]; then
-  (
-    printf 'self: super: {\n'
-    printf '  %s = super.callPackage ./derivation.nix {\n' "$packageName"
-    printf '    fetchFromGitHub = _: ./.;\n'
-    printf '  };\n'
-    printf '}\n'
-  ) >overlay.nix
-fi
+    if [[ ! -f overlay.nix ]]; then
+      (
+        printf 'self: super: {\n'
+        printf '  %s = super.callPackage ./derivation.nix {\n' "$packageName"
+        printf '    fetchFromGitHub = _: ./.;\n'
+        printf '  };\n'
+        printf '}\n'
+      ) >overlay.nix
+    fi
 
-if [[ ! -f derivation.nix ]]; then
-  (
-    printf '{ stdenv, lib, fetchFromGitHub, ... }:\n'
-    printf '\n'
-    printf 'stdenv.mkDerivation rec {\n'
-    printf '  pname = "%s";\n' "$packageName"
-    printf '  version = "0.1.0";\n'
-    printf '\n'
-    printf '  src = fetchFromGitHub {\n'
-    printf '    owner = "eraserhd";\n'
-    printf '    repo = pname;\n'
-    printf '    rev = "v${version}";\n'
-    printf '    sha256 = "";\n'
-    printf '  };\n'
-    printf '\n'
-    printf '  meta = with lib; {\n'
-    printf '    description = "TODO: fill me in";\n'
-    printf '    homepage = "https://github.com/eraserhd/%s";\n' "$packageName"
-    printf '    license = licenses.publicDomain;\n'
-    printf '    platforms = platforms.all;\n'
-    printf '    maintainers = [ maintainers.eraserhd ];\n'
-    printf '  };\n'
-    printf '}\n'
-  ) >derivation.nix
-fi
+    if [[ ! -f derivation.nix ]]; then
+      (
+        printf '{ stdenv, lib, fetchFromGitHub, ... }:\n'
+        printf '\n'
+        printf 'stdenv.mkDerivation rec {\n'
+        printf '  pname = "%s";\n' "$packageName"
+        printf '  version = "0.1.0";\n'
+        printf '\n'
+        printf '  src = fetchFromGitHub {\n'
+        printf '    owner = "eraserhd";\n'
+        printf '    repo = pname;\n'
+        printf '    rev = "v${version}";\n'
+        printf '    sha256 = "";\n'
+        printf '  };\n'
+        printf '\n'
+        printf '  meta = with lib; {\n'
+        printf '    description = "TODO: fill me in";\n'
+        printf '    homepage = "https://github.com/eraserhd/%s";\n' "$packageName"
+        printf '    license = licenses.publicDomain;\n'
+        printf '    platforms = platforms.all;\n'
+        printf '    maintainers = [ maintainers.eraserhd ];\n'
+        printf '  };\n'
+        printf '}\n'
+      ) >derivation.nix
+    fi
 
-if [[ ! -f default.nix ]]; then
-  (
-    printf 'let\n'
-    printf '  nixpkgs = import ./nixpkgs.nix;\n'
-    printf '  pkgs = import nixpkgs {\n'
-    printf '    config = {};\n'
-    printf '    overlays = [ (import ./overlay.nix) ];\n'
-    printf '  };\n'
-    printf '\n'
-    printf 'in pkgs.%s\n' "$packageName"
-  ) >default.nix
-fi
+    if [[ ! -f default.nix ]]; then
+      (
+        printf 'let\n'
+        printf '  nixpkgs = import ./nixpkgs.nix;\n'
+        printf '  pkgs = import nixpkgs {\n'
+        printf '    config = {};\n'
+        printf '    overlays = [ (import ./overlay.nix) ];\n'
+        printf '  };\n'
+        printf '\n'
+        printf 'in pkgs.%s\n' "$packageName"
+      ) >default.nix
+    fi
 
-if [[ ! -f release.nix ]]; then
-  (
-    printf '{ nixpkgs ? (import ./nixpkgs.nix), ... }:\n'
-    printf 'let\n'
-    printf '  pkgs = import nixpkgs {\n'
-    printf '    config = {};\n'
-    printf '    overlays = [\n'
-    printf '      (import ./overlay.nix)\n'
-    printf '    ];\n'
-    printf '  };\n'
-    printf 'in {\n'
-    printf '  test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
-    printf '    mkdir -p $out\n'
-    printf '    : ${pkgs.%s}\n' "$packageName"
-    printf '  %s;\n' "''"
-    printf '}'
-  ) >release.nix
-fi
+    if [[ ! -f release.nix ]]; then
+      (
+        printf '{ nixpkgs ? (import ./nixpkgs.nix), ... }:\n'
+        printf 'let\n'
+        printf '  pkgs = import nixpkgs {\n'
+        printf '    config = {};\n'
+        printf '    overlays = [\n'
+        printf '      (import ./overlay.nix)\n'
+        printf '    ];\n'
+        printf '  };\n'
+        printf 'in {\n'
+        printf '  test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
+        printf '    mkdir -p $out\n'
+        printf '    : ${pkgs.%s}\n' "$packageName"
+        printf '  %s;\n' "''"
+        printf '}'
+      ) >release.nix
+    fi
 
-if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then
-    printf '/result\n' >>.gitignore
-fi
+    if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then
+        printf '/result\n' >>.gitignore
+    fi
 
-if [ ! -f README.* ] && [[ ! -f README ]]; then
-    printf '%s\n%s\n' "$packageName" "${packageName//?/=}" >>README.adoc
-fi
+    if [ ! -f README.* ] && [[ ! -f README ]]; then
+        printf '%s\n%s\n' "$packageName" "${packageName//?/=}" >>README.adoc
+    fi
 
-if [ ! -f LICENSE* ] && [ ! -f COPYING* ]; then
-  cat >UNLICENSE <<EOF
+    if [ ! -f LICENSE* ] && [ ! -f COPYING* ]; then
+      cat >UNLICENSE <<EOF
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -113,43 +114,46 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org/>
 EOF
-fi
-
-if [ ! -f ChangeLog* ] && [ ! -f CHANGELOG* ]; then
-  (
-    printf 'Changes\n'
-    printf '=======\n'
-    printf '\n'
-    printf   'Unreleased\n'
-    printf '%s----------\n' ""
-    printf '\n'
-  ) >CHANGELOG.adoc
-fi
-
-if [[ ! -f .envrc ]]; then
-    printf 'use nix\n' >.envrc
-fi
-
-if [[ ! -d $(git rev-parse --git-dir 2>/dev/null) ]]; then
-  git init
-fi
-
-if ! git remote |grep -q '^origin$'; then
-  git remote add origin git@github.com:eraserhd/$packageName.git
-fi
-
-firstCommit=false
-if ! git log >/dev/null 2>&1; then
-    firstCommit=true
-fi
-
-if [[ -n $(git status --porcelain) ]]; then
-    git add -A
-    if $firstCommit; then
-        git commit -m "Initial commit"
-        git checkout -b develop
-        git branch -D master
-    else
-        git commit -m "Update project structure"
     fi
-fi
+
+    if [ ! -f ChangeLog* ] && [ ! -f CHANGELOG* ]; then
+      (
+        printf 'Changes\n'
+        printf '=======\n'
+        printf '\n'
+        printf   'Unreleased\n'
+        printf '%s----------\n' ""
+        printf '\n'
+      ) >CHANGELOG.adoc
+    fi
+
+    if [[ ! -f .envrc ]]; then
+        printf 'use nix\n' >.envrc
+    fi
+
+    if [[ ! -d $(git rev-parse --git-dir 2>/dev/null) ]]; then
+      git init
+    fi
+
+    if ! git remote |grep -q '^origin$'; then
+      git remote add origin git@github.com:eraserhd/$packageName.git
+    fi
+
+    firstCommit=false
+    if ! git log >/dev/null 2>&1; then
+        firstCommit=true
+    fi
+
+    if [[ -n $(git status --porcelain) ]]; then
+        git add -A
+        if $firstCommit; then
+            git commit -m "Initial commit"
+            git checkout -b develop
+            git branch -D master
+        else
+            git commit -m "Update project structure"
+        fi
+    fi
+}
+
+main "$@"

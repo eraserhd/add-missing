@@ -85,6 +85,11 @@ in {
     [[ -z $(git status --porcelain) ]]
     [[ $(git rev-parse --abbrev-ref HEAD) = develop ]]
 
+    testCase specified-slug
+    add-missing --slug 'Blork the flarpshreeper'
+    grep -q 'description = "Blork the flarpshreeper"' derivation.nix
+    grep -q '^Blork the flarpshreeper$' README.adoc
+
     testCase gitignore-no-result
     printf '/foo\n' >.gitignore
     add-missing

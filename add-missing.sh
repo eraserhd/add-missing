@@ -4,8 +4,29 @@ set -e
 
 export PATH="@git@/bin:$PATH"
 
+SLUG="TODO: fill me in"
+
+usage() {
+    printf 'Syntax: add-missing [-s|--slug SLUG]\n' >&2
+    exit 1
+}
+
+parseArgs() {
+    while (( $# > 0 )); do
+        case "$1" in
+            -s|--slug) shift; SLUG="$1";;
+            -s*)       SLUG="${1#-s}";;
+            --slug=*)  SLUG="${1#--slug=}";;
+            *)         usage;;
+        esac
+        shift
+    done
+}
+
 main() {
-    packageName=$(basename "$(pwd)")
+    parseArgs "$@"
+
+    local packageName=$(basename "$(pwd)")
 
     if [[ ! -f nixpkgs.nix ]]; then
         printf '<nixpkgs>\n' >nixpkgs.nix
@@ -37,7 +58,7 @@ main() {
         printf '  };\n'
         printf '\n'
         printf '  meta = with lib; {\n'
-        printf '    description = "TODO: fill me in";\n'
+        printf '    description = "%s";\n' "$SLUG"
         printf '    homepage = "https://github.com/eraserhd/%s";\n' "$packageName"
         printf '    license = licenses.publicDomain;\n'
         printf '    platforms = platforms.all;\n'
@@ -80,11 +101,16 @@ main() {
     fi
 
     if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then
-        printf '/result\n' >>.gitignore
+      printf '/result\n' >>.gitignore
     fi
 
     if [ ! -f README.* ] && [[ ! -f README ]]; then
-        printf '%s\n%s\n' "$packageName" "${packageName//?/=}" >>README.adoc
+      (
+        printf '%s\n' "$packageName"
+        printf '%s\n' "${packageName//?/=}"
+        printf '\n'
+        printf '%s\n' "$SLUG"
+      ) >README.adoc
     fi
 
     if [ ! -f LICENSE* ] && [ ! -f COPYING* ]; then

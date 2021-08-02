@@ -83,7 +83,7 @@ if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then
 fi
 
 if [ ! -f README.* ] && [[ ! -f README ]]; then
-    printf '= %s\n' "$packageName" >>README.adoc
+    printf '%s\n%s\n' "$packageName" "${packageName//?/=}" >>README.adoc
 fi
 
 if [ ! -f LICENSE* ] && [ ! -f COPYING* ]; then

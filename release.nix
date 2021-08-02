@@ -27,7 +27,8 @@ in rec {
     add-missing
     grep -q '^<nixpkgs>$' nixpkgs.nix
     grep -q '^/result' .gitignore
-    grep -q '^= empty-dir$' README.adoc
+    grep -q '^empty-dir$' README.adoc
+    grep -q '^=========$' README.adoc
     grep -q '^use nix$' .envrc
     [[ $(cat overlay.nix) = 'self: super: {
   empty-dir = super.callPackage ./derivation.nix {

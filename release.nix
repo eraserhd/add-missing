@@ -83,7 +83,7 @@ in {
   '"${"''"}"';
 }' ]]
     [[ -z $(git status --porcelain) ]]
-    [[ $(git rev-parse --abbrev-ref HEAD) = develop ]]
+    [[ $(git rev-parse --abbrev-ref HEAD) = main ]]
 
     testCase specified-slug
     add-missing --slug 'Blork the flarpshreeper'

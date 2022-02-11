@@ -174,7 +174,7 @@ EOF
         git add -A
         if $firstCommit; then
             git commit -m "Initial commit"
-            git checkout -b develop
+            git checkout -b main
             git branch -D master
         else
             git commit -m "Update project structure"

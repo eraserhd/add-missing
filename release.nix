@@ -35,14 +35,6 @@ in rec {
     fetchFromGitHub = _: ./.;
   };
 }' ]]
-    [[ $(cat default.nix) = 'let
-  nixpkgs = import ./nixpkgs.nix;
-  pkgs = import nixpkgs {
-    config = {};
-    overlays = [ (import ./overlay.nix) ];
-  };
-
-in pkgs.empty-dir' ]]
     grep -q 'http://unlicense.org/' UNLICENSE
     grep -q '^Changes$' CHANGELOG.adoc
     [[ -n $(git rev-parse --git-dir) ]]
@@ -124,7 +116,7 @@ in {
     testCase has-default-nix
     printf 'xyz\n' >default.nix
     add-missing
-    [[ xyz = $(cat default.nix) ]]
+    [[ ! -f default.nix ]]
 
     testCase has-LICENSE
     printf 'xyz\n' >LICENSE.md

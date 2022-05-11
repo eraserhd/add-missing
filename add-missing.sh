@@ -28,6 +28,9 @@ main() {
 
     local packageName=$(basename "$(pwd)")
 
+    # Files we no longer want
+    rm -f default.nix
+
     if [[ ! -f nixpkgs.nix ]]; then
         printf '<nixpkgs>\n' >nixpkgs.nix
     fi
@@ -66,19 +69,6 @@ main() {
         printf '  };\n'
         printf '}\n'
       ) >derivation.nix
-    fi
-
-    if [[ ! -f default.nix ]]; then
-      (
-        printf 'let\n'
-        printf '  nixpkgs = import ./nixpkgs.nix;\n'
-        printf '  pkgs = import nixpkgs {\n'
-        printf '    config = {};\n'
-        printf '    overlays = [ (import ./overlay.nix) ];\n'
-        printf '  };\n'
-        printf '\n'
-        printf 'in pkgs.%s\n' "$packageName"
-      ) >default.nix
     fi
 
     if [[ ! -f flake.nix ]]; then

@@ -29,11 +29,7 @@ main() {
     local packageName=$(basename "$(pwd)")
 
     # Files we no longer want
-    rm -f default.nix overlay.nix
-
-    if [[ ! -f nixpkgs.nix ]]; then
-        printf '<nixpkgs>\n' >nixpkgs.nix
-    fi
+    rm -f default.nix nixpkgs.nix overlay.nix
 
     if [[ ! -f derivation.nix ]]; then
       (

@@ -25,7 +25,6 @@ in rec {
 
     testCase empty-dir
     add-missing
-    grep -q '^<nixpkgs>$' nixpkgs.nix
     grep -q '^/result' .gitignore
     grep -q '^empty-dir$' README.adoc
     grep -q '^=========$' README.adoc

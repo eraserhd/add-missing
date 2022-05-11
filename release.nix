@@ -161,6 +161,22 @@ in {
     add-missing
     [[ $(cat release.nix) = xyz ]]
 
+    testCase no-flake-nix
+    add-missing
+    [[ $(cat flake.nix) = "{
+  description = \"TODO: fill me in\";
+  inputs = {
+    flake-utils.url = \"github:numtide/flake-utils\";
+  };
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.simpleFlake {
+      inherit self nixpkgs;
+      name = \"no-flake-nix\";
+      overlay = ./overlay.nix;
+      systems = flake-util.allSystems;
+    };
+}" ]]
+
     set +x
   '');
 }

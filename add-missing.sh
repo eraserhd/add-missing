@@ -81,6 +81,24 @@ main() {
       ) >default.nix
     fi
 
+    if [[ ! -f flake.nix ]]; then
+      (
+        printf '{\n'
+        printf '  description = "%s";\n' "$SLUG"
+        printf '  inputs = {\n'
+        printf '    flake-utils.url = "github:numtide/flake-utils";\n'
+        printf '  };\n'
+        printf '  outputs = { self, nixpkgs, flake-utils }:\n'
+        printf '    flake-utils.lib.simpleFlake {\n'
+        printf '      inherit self nixpkgs;\n'
+        printf '      name = "%s";\n' "$packageName"
+        printf '      overlay = ./overlay.nix;\n'
+        printf '      systems = flake-util.allSystems;\n'
+        printf '    };\n'
+        printf '}\n'
+      ) >flake.nix
+    fi
+
     if [[ ! -f release.nix ]]; then
       (
         printf '{ nixpkgs ? (import ./nixpkgs.nix), ... }:\n'

@@ -29,36 +29,21 @@ main() {
     local packageName=$(basename "$(pwd)")
 
     # Files we no longer want
-    rm -f default.nix
+    rm -f default.nix overlay.nix
 
     if [[ ! -f nixpkgs.nix ]]; then
         printf '<nixpkgs>\n' >nixpkgs.nix
     fi
 
-    if [[ ! -f overlay.nix ]]; then
-      (
-        printf 'self: super: {\n'
-        printf '  %s = super.callPackage ./derivation.nix {\n' "$packageName"
-        printf '    fetchFromGitHub = _: ./.;\n'
-        printf '  };\n'
-        printf '}\n'
-      ) >overlay.nix
-    fi
-
     if [[ ! -f derivation.nix ]]; then
       (
-        printf '{ stdenv, lib, fetchFromGitHub, ... }:\n'
+        printf '{ stdenv, lib, ... }:\n'
         printf '\n'
         printf 'stdenv.mkDerivation rec {\n'
         printf '  pname = "%s";\n' "$packageName"
         printf '  version = "0.1.0";\n'
         printf '\n'
-        printf '  src = fetchFromGitHub {\n'
-        printf '    owner = "eraserhd";\n'
-        printf '    repo = pname;\n'
-        printf '    rev = "v${version}";\n'
-        printf '    sha256 = "";\n'
-        printf '  };\n'
+        printf '  src = ./.;\n'
         printf '\n'
         printf '  meta = with lib; {\n'
         printf '    description = "%s";\n' "$SLUG"
@@ -82,7 +67,9 @@ main() {
         printf '    flake-utils.lib.simpleFlake {\n'
         printf '      inherit self nixpkgs;\n'
         printf '      name = "%s";\n' "$packageName"
-        printf '      overlay = ./overlay.nix;\n'
+        printf '      overlay = self: super: {\n'
+        printf '        %s = super.callPackage ./derivation.nix {};\n' "$packageName"
+        printf '      };\n'
         printf '      systems = flake-util.allSystems;\n'
         printf '    };\n'
         printf '}\n'

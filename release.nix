@@ -30,27 +30,17 @@ in rec {
     grep -q '^empty-dir$' README.adoc
     grep -q '^=========$' README.adoc
     grep -q '^use nix$' .envrc
-    [[ $(cat overlay.nix) = 'self: super: {
-  empty-dir = super.callPackage ./derivation.nix {
-    fetchFromGitHub = _: ./.;
-  };
-}' ]]
     grep -q 'http://unlicense.org/' UNLICENSE
     grep -q '^Changes$' CHANGELOG.adoc
     [[ -n $(git rev-parse --git-dir) ]]
     git remote -v |grep -q '^origin	git@github.com:eraserhd/empty-dir.git (fetch)$'
-    [[ $(cat derivation.nix) = '{ stdenv, lib, fetchFromGitHub, ... }:
+    [[ $(cat derivation.nix) = '{ stdenv, lib, ... }:
 
 stdenv.mkDerivation rec {
   pname = "empty-dir";
   version = "0.1.0";
 
-  src = fetchFromGitHub {
-    owner = "eraserhd";
-    repo = pname;
-    rev = "v''${version}";
-    sha256 = "";
-  };
+  src = ./.;
 
   meta = with lib; {
     description = "TODO: fill me in";
@@ -109,9 +99,8 @@ in {
     (( 0 == $(grep -c '^use nix$' .envrc) ))
 
     testCase has-overlay-nix
-    printf 'xxx\n' >overlay.nix
     add-missing
-    [[ xxx = $(cat overlay.nix) ]]
+    [[ ! -f overlay.nix ]]
 
     testCase has-default-nix
     printf 'xyz\n' >default.nix
@@ -164,7 +153,9 @@ in {
     flake-utils.lib.simpleFlake {
       inherit self nixpkgs;
       name = \"no-flake-nix\";
-      overlay = ./overlay.nix;
+      overlay = self: super: {
+        no-flake-nix = super.callPackage ./derivation.nix {};
+      };
       systems = flake-util.allSystems;
     };
 }" ]]

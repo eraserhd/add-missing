@@ -32,7 +32,7 @@
     grep -q '^/result' .gitignore
     grep -q '^empty-dir$' README.adoc
     grep -q '^=========$' README.adoc
-    grep -q '^use nix$' .envrc
+    grep -q '^use flake$' .envrc
     grep -q 'http://unlicense.org/' UNLICENSE
     grep -q '^Changes$' CHANGELOG.adoc
     [[ -n $(git rev-parse --git-dir) ]]
@@ -85,7 +85,12 @@ stdenv.mkDerivation rec {
     testCase has-envrc
     touch .envrc
     add-missing
-    (( 0 == $(grep -c '^use nix$' .envrc) ))
+    (( 0 == $(grep -c '^use flake$' .envrc) ))
+
+    testCase has-nix-envrc
+    printf 'use nix\n' >.envrc
+    add-missing
+    (( 1 == $(grep -c '^use flake$' .envrc) ))
 
     testCase has-overlay-nix
     add-missing

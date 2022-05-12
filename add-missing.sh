@@ -137,8 +137,8 @@ EOF
       ) >CHANGELOG.adoc
     fi
 
-    if [[ ! -f .envrc ]]; then
-        printf 'use nix\n' >.envrc
+    if [[ ! -f .envrc ]] || [[ $(cat .envrc) = "use nix" ]]; then
+        printf 'use flake\n' >.envrc
     fi
 
     if [[ ! -d $(git rev-parse --git-dir 2>/dev/null) ]]; then

@@ -149,13 +149,19 @@ in {
     flake-utils.url = \"github:numtide/flake-utils\";
   };
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.simpleFlake {
-      inherit self nixpkgs;
-      name = \"no-flake-nix\";
-      overlay = self: super: {
-        no-flake-nix = super.callPackage ./derivation.nix {};
+    (flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.\''${system};
+        no-flake-nix = pkgs.callPackage ./derivation.nix {};
+      in {
+        packages = {
+          default = no-flake-nix;
+          inherit no-flake-nix;
+        };
+    })) // {
+      overlays.default = final: prev: {
+        no-flake-nix = prev.callPackage ./derivation.nix {};
       };
-      systems = flake-util.allSystems;
     };
 }" ]]
 

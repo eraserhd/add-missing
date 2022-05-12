@@ -60,13 +60,19 @@ main() {
         printf '    flake-utils.url = "github:numtide/flake-utils";\n'
         printf '  };\n'
         printf '  outputs = { self, nixpkgs, flake-utils }:\n'
-        printf '    flake-utils.lib.simpleFlake {\n'
-        printf '      inherit self nixpkgs;\n'
-        printf '      name = "%s";\n' "$packageName"
-        printf '      overlay = self: super: {\n'
-        printf '        %s = super.callPackage ./derivation.nix {};\n' "$packageName"
+        printf '    (flake-utils.lib.eachDefaultSystem (system:\n'
+        printf '      let\n'
+        printf '        pkgs = nixpkgs.legacyPackages.${system};\n'
+        printf '        %s = pkgs.callPackage ./derivation.nix {};\n' "$packageName"
+        printf '      in {\n'
+        printf '        packages = {\n'
+        printf '          default = %s;\n' "$packageName"
+        printf '          inherit %s;\n' "$packageName"
+        printf '        };\n'
+        printf '    })) // {\n'
+        printf '      overlays.default = final: prev: {\n'
+        printf '        %s = prev.callPackage ./derivation.nix {};\n' "$packageName"
         printf '      };\n'
-        printf '      systems = flake-util.allSystems;\n'
         printf '    };\n'
         printf '}\n'
       ) >flake.nix

@@ -69,6 +69,12 @@ main() {
         printf '          default = %s;\n' "$packageName"
         printf '          inherit %s;\n' "$packageName"
         printf '        };\n'
+        printf '        checks = {\n'
+        printf '          test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
+        printf '            mkdir -p $out\n'
+        printf '            : ${pkgs.%s}\n' "$packageName"
+        printf '          %s;\n' "''"
+        printf '        };\n'
         printf '    })) // {\n'
         printf '      overlays.default = final: prev: {\n'
         printf '        %s = prev.callPackage ./derivation.nix {};\n' "$packageName"
@@ -76,25 +82,6 @@ main() {
         printf '    };\n'
         printf '}\n'
       ) >flake.nix
-    fi
-
-    if [[ ! -f release.nix ]]; then
-      (
-        printf '{ nixpkgs ? (import ./nixpkgs.nix), ... }:\n'
-        printf 'let\n'
-        printf '  pkgs = import nixpkgs {\n'
-        printf '    config = {};\n'
-        printf '    overlays = [\n'
-        printf '      (import ./overlay.nix)\n'
-        printf '    ];\n'
-        printf '  };\n'
-        printf 'in {\n'
-        printf '  test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
-        printf '    mkdir -p $out\n'
-        printf '    : ${pkgs.%s}\n' "$packageName"
-        printf '  %s;\n' "''"
-        printf '}'
-      ) >release.nix
     fi
 
     if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then

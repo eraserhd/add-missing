@@ -53,20 +53,6 @@ stdenv.mkDerivation rec {
     maintainers = [ maintainers.eraserhd ];
   };
 }' ]]
-    [[ $(cat release.nix) = '{ nixpkgs ? (import ./nixpkgs.nix), ... }:
-let
-  pkgs = import nixpkgs {
-    config = {};
-    overlays = [
-      (import ./overlay.nix)
-    ];
-  };
-in {
-  test = pkgs.runCommandNoCC "empty-dir-test" {} '"${"''"}"'
-    mkdir -p $out
-    : ''${pkgs.empty-dir}
-  '"${"''"}"';
-}' ]]
     [[ -z $(git status --porcelain) ]]
     [[ $(git rev-parse --abbrev-ref HEAD) = main ]]
 
@@ -140,11 +126,6 @@ in {
     add-missing >$out/log 2>&1
     if grep -q 'Reinitialized' $out/log; then false; fi
 
-    testCase has-release-nix
-    printf 'xyz\n' >release.nix
-    add-missing
-    [[ $(cat release.nix) = xyz ]]
-
     testCase no-flake-nix
     add-missing
     [[ $(cat flake.nix) = "{
@@ -161,6 +142,12 @@ in {
         packages = {
           default = no-flake-nix;
           inherit no-flake-nix;
+        };
+        checks = {
+          test = pkgs.runCommandNoCC \"no-flake-nix-test\" {} '""'
+            mkdir -p \$out
+            : \''${pkgs.no-flake-nix}
+          '""';
         };
     })) // {
       overlays.default = final: prev: {

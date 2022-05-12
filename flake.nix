@@ -1,19 +1,23 @@
-{ nixpkgs ? (import ./nixpkgs.nix), ... }:
-let
-  pkgs = import nixpkgs {
-    config = {};
-    overlays = [
-      (import ./overlay.nix)
-    ];
+{
+  description = "TODO: fill me in";
+  inputs = {
+    flake-utils.url = "github:numtide/flake-utils";
   };
-  add-missing = pkgs.add-missing;
-  git = pkgs.git;
-
-in rec {
-  test = pkgs.runCommandNoCC "add-missing-test" {} (''
+  outputs = { self, nixpkgs, flake-utils }:
+    (flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        add-missing = pkgs.callPackage ./derivation.nix {};
+      in {
+        packages = {
+          default = add-missing;
+          inherit add-missing;
+        };
+        checks = {
+          test = pkgs.runCommandNoCC "add-missing-test" {} (''
     set -x
 
-    export PATH="${add-missing}/bin:${git}/bin:$PATH"
+    export PATH="${add-missing}/bin:${pkgs.git}/bin:$PATH"
     export GIT_AUTHOR_NAME="Foo Bar" GIT_COMMITTER_NAME="Foo Bar"
     export GIT_AUTHOR_EMAIL="foo@example.com" GIT_COMMITTER_EMAIL="foo@example.com"
 
@@ -167,4 +171,10 @@ in {
 
     set +x
   '');
+        };
+    })) // {
+      overlays.default = final: prev: {
+        add-missing = prev.callPackage ./derivation.nix {};
+      };
+    };
 }

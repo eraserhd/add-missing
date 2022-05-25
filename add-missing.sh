@@ -72,7 +72,7 @@ main() {
         printf '        checks = {\n'
         printf '          test = pkgs.runCommandNoCC "%s-test" {} %s\n' "$packageName" "''"
         printf '            mkdir -p $out\n'
-        printf '            : ${pkgs.%s}\n' "$packageName"
+        printf '            : ${%s}\n' "$packageName"
         printf '          %s;\n' "''"
         printf '        };\n'
         printf '    })) // {\n'

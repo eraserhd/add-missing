@@ -151,7 +151,7 @@ stdenv.mkDerivation rec {
         checks = {
           test = pkgs.runCommandNoCC \"no-flake-nix-test\" {} '""'
             mkdir -p \$out
-            : \''${pkgs.no-flake-nix}
+            : \''${no-flake-nix}
           '""';
         };
     })) // {

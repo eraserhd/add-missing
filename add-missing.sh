@@ -107,6 +107,9 @@ main() {
     if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then
       printf '/result\n' >>.gitignore
     fi
+    if ! grep -q '^/.direnv$' .gitignorre; then
+      printf '/.direnv\n' >>.gitignore
+    fi
 
     if [ ! -f README.* ] && [[ ! -f README ]]; then
       (

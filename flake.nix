@@ -30,6 +30,7 @@
     testCase empty-dir
     add-missing
     grep -q '^/result' .gitignore
+    grep -q '^/.direnv$' .gitignore
     grep -q '^empty-dir$' README.adoc
     grep -q '^=========$' README.adoc
     grep -q '^use flake$' .envrc

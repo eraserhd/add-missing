@@ -84,6 +84,26 @@ main() {
       ) >flake.nix
     fi
 
+    if [[ ! -f .github/workflows/test.yml ]]; then
+      mkdir -p .github/workflows
+      (
+        printf 'name: "Test"\n'
+        printf 'on:\n'
+        printf '  pull_request:\n'
+        printf '  push:\n'
+        printf 'jobs:\n'
+        printf '  tests:\n'
+        printf '    runs-on: ubuntu-latest\n'
+        printf '    steps:\n'
+        printf '    - uses: actions/checkout@v2.4.0\n'
+        printf '    - uses: cachix/install-nix-action@v15\n'
+        printf '      with:\n'
+        printf '        extra_nix_config: |\n'
+        printf '          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}\n'
+        printf '    - run: nix flake check\n'
+      ) >.github/workflows/test.yml
+    fi
+
     if [[ ! -f .gitignore ]] || ! grep -q '^/result$' .gitignore; then
       printf '/result\n' >>.gitignore
     fi

@@ -36,6 +36,7 @@
     grep -q 'http://unlicense.org/' UNLICENSE
     grep -q '^Changes$' CHANGELOG.adoc
     [[ -n $(git rev-parse --git-dir) ]]
+    [[ -f .github/workflows/test.yml ]]
     git remote -v |grep -q '^origin	git@github.com:eraserhd/empty-dir.git (fetch)$'
     [[ $(cat derivation.nix) = '{ stdenv, lib, ... }:
 

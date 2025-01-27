@@ -57,6 +57,7 @@ main() {
         printf '{\n'
         printf '  description = "%s";\n' "$SLUG"
         printf '  inputs = {\n'
+        printf '    nixpkgs.url = "github:NixOS/nixpkgs";\n'
         printf '    flake-utils.url = "github:numtide/flake-utils";\n'
         printf '  };\n'
         printf '  outputs = { self, nixpkgs, flake-utils }:\n'

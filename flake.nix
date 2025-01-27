@@ -138,6 +138,7 @@ stdenv.mkDerivation rec {
     [[ $(cat flake.nix) = "{
   description = \"TODO: fill me in\";
   inputs = {
+    nixpkgs.url = \"github:NixOS/nixpkgs\";
     flake-utils.url = \"github:numtide/flake-utils\";
   };
   outputs = { self, nixpkgs, flake-utils }:
